@@ -92,7 +92,7 @@
 
   <h2 class="sec" style="margin-top:26px">📋 Full watchlist</h2>
   <div class="wrap"><table>
-    <thead><tr><th>Symbol</th><th>Price</th><th>Chg%</th><th>Vol vs avg</th><th>RSI</th><th>Trend</th><th>30-day</th></tr></thead>
+    <thead><tr><th>Symbol</th><th>Price</th><th>Chg%</th><th>Vol vs avg</th><th>RSI</th><th>Trend</th><th>Bias</th><th>30-day</th></tr></thead>
     <tbody id="allrows"></tbody>
   </table></div>
 </main>
@@ -119,9 +119,12 @@ function card(p){
   const d=p.desk||{}, ch=(p.chg_pct>=0);
   const lv=d.charts&&d.charts.levels;
   const news=(d.news||[]).map(n=>`<li>• ${esc(n.title)} <span class="src">— ${esc(n.source||'')}</span></li>`).join('');
+  const b=d.bias;
+  const biasHtml=b?`<div style="margin:0 0 10px"><span class="verdict ${b.label==='BULLISH'?'v-SETUP':b.label==='BEARISH'?'v-SKIP':'v-WAIT'}">${b.label}</span> <span style="color:#8b98ab;font-size:12px">${esc(b.why)}</span></div>`:'';
   return `<div class="card">
     <div class="top"><span class="sym">${esc(p.symbol.replace('.NS',''))} <span style="color:#8b98ab;font-weight:400;font-size:12.5px">${esc(p.name)}</span></span>
     <span class="px ${ch?'up':'down'}">${money(p.price,p.market)} (${ch?'+':''}${p.chg_pct}%)</span></div>
+    ${biasHtml}
     <div class="agent scout"><span class="tag">SCOUT</span><span class="body">${esc(d.scout||'')}</span></div>
     <div class="agent news"><span class="tag">NEWS</span><span class="body"><ul>${news||'<span style="color:#8b98ab">no fresh headlines</span>'}</ul></span></div>
     <div class="agent senti"><span class="tag">SENTIMENT</span><span class="body"><span class="tone-${d.sentiment?.label||'mixed'}">${(d.sentiment?.label||'mixed').toUpperCase()}</span> — ${esc(d.sentiment?.note||'')}</span></div>
@@ -135,7 +138,7 @@ function card(p){
     <div class="agent chief"><span class="tag">CHIEF</span><span class="body"><span class="verdict v-${d.chief?.verdict||'WAIT'}">${d.chief?.verdict||'WAIT'}</span> <span style="color:#8b98ab">— ${esc(d.chief?.why||'')}</span></span></div>
   </div>`;
 }
-function esc(s){return String(s??'').replace(/[&<>']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 function render(){
   if(!DATA) return;
@@ -161,9 +164,10 @@ function render(){
   document.getElementById('allrows').innerHTML=DATA.symbols
     .filter(s=>s.market===CUR).map(s=>{
     const ch=s.chg_pct>=0;
+    const bb=s.bias?`<span class="${s.bias==='BULLISH'?'up':s.bias==='BEARISH'?'down':''}" style="font-weight:700;font-size:12px">${s.bias}</span>`:'–';
     return `<tr><td><b>${esc(s.symbol.replace('.NS',''))}</b><br><span style="color:#8b98ab;font-size:11.5px">${esc(s.name)}</span></td>
       <td>${money(s.price,s.market)}</td><td class="${ch?'up':'down'}">${ch?'+':''}${s.chg_pct}%</td>
-      <td>${s.vol_ratio}x</td><td>${s.rsi_14??'–'}</td><td>${s.trend}</td><td>${spark(s.spark,ch)}</td></tr>`;
+      <td>${s.vol_ratio}x</td><td>${s.rsi_14??'–'}</td><td>${s.trend}</td><td>${bb}</td><td>${spark(s.spark,ch)}</td></tr>`;
   }).join('');
   tick();
 }
