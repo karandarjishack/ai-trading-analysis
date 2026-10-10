@@ -28,6 +28,7 @@ debate every pick, and deliver a verdict — automatically, every 15 minutes dur
 
 - **~1,000 stocks screened** — every constituent of the **S&P 500** (US) plus the **Nifty 500** (India, NSE)
 - **Six-agent AI desk on every pick** — Scout, News, Sentiment, Charts, Skeptic and Chief (see below)
+- **Bull / Bear bias on every stock** — each pick card carries a **BULLISH / BEARISH / NEUTRAL** badge with its reasoning, and the full watchlist has a sortable Bias column, so the directional read is visible at a glance
 - **Four live screens** — 🟢 Most Bought · 🔴 Most Sold · 📈 Near Breakout · 📉 Weak / Near Lows
 - **Full watchlist** — price, day change, volume vs average, RSI(14), trend and 30-day sparkline for every stock
 - **5 index cards** — S&P 500, Nasdaq, Dow Jones, Nifty 50, Bank Nifty with live day change
@@ -49,6 +50,11 @@ Every shortlisted stock is analyzed by six agents before it reaches you:
 | 🟢 **CHARTS** | Computes entry, stop-loss and two target levels from 14-day ATR |
 | 🔴 **SKEPTIC** | Argues *against* the trade — overbought risk, one-off volume, market override |
 | ⚪ **CHIEF** | Final verdict: **SETUP** (tradeable) · **WATCH** · **WAIT** · **SKIP** |
+
+**Bull / Bear bias:** each card also shows a directional bias badge. It's a vote of three
+signals — trend (20/50-day), today's momentum (±2%), and headline sentiment.
+Two or more bullish votes → **BULLISH**, two or more bearish → **BEARISH**,
+otherwise **NEUTRAL**. The badge lists which signals voted, so you can see the reasoning.
 
 ---
 
