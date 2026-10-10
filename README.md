@@ -2,10 +2,10 @@
 
 **Realtime stock analysis for US & Indian markets — no servers, no Vercel, just GitHub.**
 
-[![Update market data](https://github.com/karandarjishack/stock-analysis/actions/workflows/update.yml/badge.svg)](https://github.com/karandarjishack/stock-analysis/actions/workflows/update.yml)
-[![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-live-brightgreen)](https://karandarjishack.github.io/stock-analysis/)
+[![Update market data](https://github.com/karandarjishack/ai-trading-analysis/actions/workflows/update.yml/badge.svg)](https://github.com/karandarjishack/ai-trading-analysis/actions/workflows/update.yml)
+[![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-live-brightgreen)](https://karandarjishack.github.io/ai-trading-analysis/)
 
-### 🔴 Live dashboard → https://karandarjishack.github.io/stock-analysis/
+### 🔴 Live dashboard → https://karandarjishack.github.io/ai-trading-analysis/
 
 Inspired by the viral AI trading-desk reels: six specialized AI agents screen the market,
 debate every pick, and deliver a verdict — automatically, every 15 minutes during market hours.
@@ -84,7 +84,7 @@ proxy, not exchange order-flow data. No free feed provides true buy/sell imbalan
                ▼
    docs/index.html  (static page, auto-refreshes every 5 min)
                ▼
-   https://karandarjishack.github.io/stock-analysis/
+   https://karandarjishack.github.io/ai-trading-analysis/
 ```
 
 - **Fail-safe:** if a run fetches zero symbols, the previous `market.json` is kept — the site never goes blank.
