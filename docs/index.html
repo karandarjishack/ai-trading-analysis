@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KD's AI Trading Desk — Realtime Stock Analysis</title>
+<title>AI Trading Analysis — Realtime Stock Analysis</title>
 <style>
   :root { --bg:#0a0e14; --panel:#11161f; --panel2:#161d29; --line:#232c3d;
           --txt:#e6edf3; --dim:#8b98ab; --green:#22c55e; --red:#ef4444;
@@ -71,7 +71,7 @@
 </head>
 <body>
 <header>
-  <h1>🤖 KD's <span class="desk">AI Trading Desk</span></h1>
+  <h1>AI <span class="desk">Trading Analysis</span></h1>
   <div class="meta">
     <span><span class="live-dot"></span><span id="upd">loading…</span></span>
     <span class="badge" id="usBadge">US: …</span>
@@ -149,7 +149,7 @@ function render(){
   const ub=document.getElementById('usBadge'), ib=document.getElementById('inBadge');
   ub.textContent='US: '+(ms.us_open?'OPEN':'CLOSED'); ub.className='badge '+(ms.us_open?'open':'closed');
   ib.textContent='India: '+(ms.india_open?'OPEN':'CLOSED'); ib.className='badge '+(ms.india_open?'open':'closed');
-  document.getElementById('disclaimer').textContent='⚠️ '+DATA.disclaimer+' Built for KD · refreshes automatically during market hours.';
+  document.getElementById('disclaimer').textContent='⚠️ '+DATA.disclaimer+' Data refreshes automatically during market hours.';
   for(const mkt of ['US','IN']){
     const el=document.getElementById('panel-'+mkt);
     el.innerHTML=SECDEF.map(([key,title,sub])=>{
