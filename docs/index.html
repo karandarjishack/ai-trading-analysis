@@ -9,12 +9,12 @@
           --txt:#e6edf3; --dim:#8b98ab; --green:#22c55e; --red:#ef4444;
           --amber:#f59e0b; --blue:#38bdf8; --purple:#a78bfa; }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { background:var(--bg); color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; }
-  header { padding:18px 22px; border-bottom:1px solid var(--line); display:flex; flex-wrap:wrap;
+  body { background:var(--bg); color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; font-variant-numeric:tabular-nums; }
+  header { padding:14px 22px; border-bottom:1px solid var(--line); display:flex; flex-wrap:wrap;
            gap:10px; align-items:center; justify-content:space-between; background:#0d1219;
            position:sticky; top:0; z-index:10; }
-  h1 { font-size:20px; letter-spacing:.5px; }
-  h1 .desk { color:var(--blue); }
+  h1 { font-size:17px; letter-spacing:2.5px; text-transform:uppercase; font-weight:700; }
+  h1 .desk { color:var(--txt); font-weight:400; }
   .meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12.5px; color:var(--dim); }
   .badge { padding:3px 10px; border-radius:20px; font-size:11.5px; font-weight:600; border:1px solid var(--line); }
   .open { color:var(--green); border-color:var(--green); }
@@ -22,28 +22,29 @@
   .live-dot { width:8px; height:8px; border-radius:50%; background:var(--green); display:inline-block;
               animation:pulse 2s infinite; margin-right:5px; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
-  .indices { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; padding:16px 22px 0; }
-  .idx { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
-  .idx .n { font-size:12px; color:var(--dim); }
-  .idx .p { font-size:18px; font-weight:700; margin-top:2px; }
+  .indices { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; padding:14px 22px 0; }
+  .idx { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:10px 12px; }
+  .idx .n { font-size:10.5px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; }
+  .idx .p { font-size:16px; font-weight:700; margin-top:2px; }
   .up { color:var(--green); } .down { color:var(--red); }
-  .tabs { display:flex; gap:8px; padding:16px 22px 0; }
-  .tab { padding:9px 22px; border-radius:8px 8px 0 0; background:var(--panel); color:var(--dim);
-         border:1px solid var(--line); border-bottom:none; cursor:pointer; font-size:14px; font-weight:600; }
-  .tab.active { background:var(--panel2); color:var(--txt); border-bottom:2px solid var(--blue); }
+  .tabs { display:flex; gap:4px; padding:14px 22px 0; }
+  .tab { padding:9px 20px; border-radius:6px 6px 0 0; background:transparent; color:var(--dim);
+         border:1px solid transparent; border-bottom:none; cursor:pointer; font-size:12px; font-weight:700;
+         text-transform:uppercase; letter-spacing:1.2px; }
+  .tab.active { background:var(--panel2); color:var(--txt); border-color:var(--line); }
   main { padding:0 22px 30px; }
-  .tabpanel { display:none; background:var(--panel2); border:1px solid var(--line); border-radius:0 10px 10px 10px; padding:18px; }
+  .tabpanel { display:none; background:var(--panel2); border:1px solid var(--line); border-radius:0 6px 6px 6px; padding:18px; }
   .tabpanel.active { display:block; }
-  h2.sec { font-size:15px; margin:6px 0 12px; letter-spacing:.4px; }
-  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:14px; margin-bottom:26px; }
-  .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  h2.sec { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1.8px; color:var(--dim);
+           margin:26px 0 4px; padding-bottom:8px; border-bottom:1px solid var(--line); }
+  h2.sec:first-child { margin-top:6px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:12px; margin-bottom:26px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px 16px; }
   .card .top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
-  .card .sym { font-weight:700; font-size:16px; }
-  .card .px { font-size:15px; font-weight:600; }
-  .agent { display:flex; gap:8px; margin:7px 0; font-size:13px; line-height:1.45; }
-  .agent .tag { flex:0 0 74px; font-size:10.5px; font-weight:700; letter-spacing:.6px; padding-top:2px; }
-  .scout .tag{color:var(--blue)} .news .tag{color:var(--purple)} .senti .tag{color:var(--amber)}
-  .charts .tag{color:var(--green)} .skep .tag{color:var(--red)} .chief .tag{color:var(--txt)}
+  .card .sym { font-weight:700; font-size:15px; letter-spacing:.3px; }
+  .card .px { font-size:14px; font-weight:600; }
+  .agent { display:flex; gap:10px; margin:7px 0; font-size:13px; line-height:1.45; }
+  .agent .tag { flex:0 0 70px; font-size:10px; font-weight:700; letter-spacing:1px; padding-top:2px; color:#7d8a9e; }
   .agent .body { color:#c6d0de; }
   .news ul { list-style:none; }
   .news li { margin:3px 0; }
@@ -82,15 +83,15 @@
 <div class="indices" id="indices"></div>
 
 <div class="tabs">
-  <div class="tab active" data-t="US" onclick="switchTab('US')">🇺🇸 US Stocks</div>
-  <div class="tab" data-t="IN" onclick="switchTab('IN')">🇮🇳 India (NSE)</div>
+  <div class="tab active" data-t="US" onclick="switchTab('US')">US Stocks</div>
+  <div class="tab" data-t="IN" onclick="switchTab('IN')">India (NSE)</div>
 </div>
 
 <main>
   <div class="tabpanel active" id="panel-US"></div>
   <div class="tabpanel" id="panel-IN"></div>
 
-  <h2 class="sec" style="margin-top:26px">📋 Full watchlist</h2>
+  <h2 class="sec" style="margin-top:26px">Full watchlist</h2>
   <div class="wrap"><table>
     <thead><tr><th>Symbol</th><th>Price</th><th>Chg%</th><th>Vol vs avg</th><th>RSI</th><th>Trend</th><th>Bias</th><th>30-day</th></tr></thead>
     <tbody id="allrows"></tbody>
@@ -102,10 +103,10 @@
 <script>
 let DATA=null, CUR='US';
 const SECDEF=[
-  ['most_bought','🟢 Most Bought','Scout flagged heavy buying on big volume'],
-  ['most_sold','🔴 Most Sold','Scout flagged heavy selling on big volume'],
-  ['breakouts','📈 Near Breakout','hugging the 20-day high on strong volume'],
-  ['weak','📉 Weak / Near Lows','sitting near the 20-day low'],
+  ['most_bought','Most Bought','Heavy buying on big volume'],
+  ['most_sold','Most Sold','Heavy selling on big volume'],
+  ['breakouts','Near Breakout','Hugging the 60-day high on strong volume'],
+  ['weak','Weak / Near Lows','Sitting near the 60-day low'],
 ];
 const money=(v,mkt)=> (mkt==='US'?'$':'₹') + Number(v).toLocaleString('en-US',{maximumFractionDigits:2});
 
@@ -157,7 +158,7 @@ function render(){
     const el=document.getElementById('panel-'+mkt);
     el.innerHTML=SECDEF.map(([key,title,sub])=>{
       const picks=DATA.screen[key].filter(p=>p.market===mkt);
-      return `<h2 class="sec">${title}</h2><div class="note">${sub}</div>
+      return `<h2 class="sec">${title} <span style="color:#4a5568">· ${picks.length}</span></h2><div class="note">${sub}</div>
         ${picks.length?`<div class="cards">${picks.map(card).join('')}</div>`:'<div class="empty">Nothing on the tape right now.</div>'}`;
     }).join('');
   }
