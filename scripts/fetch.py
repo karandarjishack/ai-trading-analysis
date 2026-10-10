@@ -22,6 +22,9 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
 UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"}
+# Yahoo sometimes blocks specific hosts/IP ranges (e.g. cloud runners), so we
+# fail over across hosts and retry with backoff before giving up on a symbol.
+YAHOO_HOSTS = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]
 
 US_SYMBOLS = [
     ("AAPL", "Apple"), ("MSFT", "Microsoft"), ("NVDA", "NVIDIA"), ("TSLA", "Tesla"),
@@ -58,8 +61,18 @@ def http_get(url, timeout=25):
 
 
 def fetch_chart(symbol):
-    return json.loads(http_get(
-        f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=3mo"))
+    """Fetch daily chart with host failover and retries. Raises on total failure."""
+    last_err = None
+    for host in YAHOO_HOSTS:
+        for attempt in range(3):
+            try:
+                return json.loads(http_get(
+                    f"https://{host}/v8/finance/chart/{symbol}?interval=1d&range=3mo",
+                    timeout=25))
+            except Exception as e:
+                last_err = e
+                time.sleep(1.0 * (attempt + 1))
+    raise last_err
 
 
 def rsi(closes, period=14):
@@ -237,10 +250,10 @@ def main():
     symbols, indices = [], {}
     for sym, name in US_SYMBOLS:
         symbols.append(analyze(sym, name, "US"))
-        time.sleep(0.3)
+        time.sleep(0.8)
     for sym, name in IN_SYMBOLS:
         symbols.append(analyze(sym, name, "IN"))
-        time.sleep(0.3)
+        time.sleep(0.8)
     for sym, name in US_INDICES + IN_INDICES:
         mkt = "US" if sym in dict(US_INDICES) else "IN"
         try:
@@ -253,6 +266,11 @@ def main():
         time.sleep(0.3)
 
     ok = [s for s in symbols if "error" not in s]
+    if not ok:
+        # FAIL-SAFE: never overwrite last good data with an empty run
+        # (e.g. if the data source blocks this runner's IP).
+        print("no symbols fetched; keeping previous market.json unchanged")
+        return
     movers = [s for s in ok if abs(s["chg_pct"]) >= 2.0 and s["vol_ratio"] >= 1.2]
     most_bought = sorted([s for s in movers if s["chg_pct"] > 0], key=lambda x: -x["chg_pct"])[:8]
     most_sold = sorted([s for s in movers if s["chg_pct"] < 0], key=lambda x: x["chg_pct"])[:8]
