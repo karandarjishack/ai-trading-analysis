@@ -1,11 +1,11 @@
-# 🤖 KD's AI Trading Desk
+# AI Trading Analysis
 
 **Realtime stock analysis for US & Indian markets — no servers, no Vercel, just GitHub.**
 
-[![Update market data](https://github.com/karandarjishack/stock-analysis/actions/workflows/update.yml/badge.svg)](https://github.com/karandarjishack/stock-analysis/actions/workflows/update.yml)
-[![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-live-brightgreen)](https://karandarjishack.github.io/stock-analysis/)
+[![Update market data](https://github.com/karandarjishack/ai-trading-analysis/actions/workflows/update.yml/badge.svg)](https://github.com/karandarjishack/ai-trading-analysis/actions/workflows/update.yml)
+[![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-live-brightgreen)](https://karandarjishack.github.io/ai-trading-analysis/)
 
-### 🔴 Live dashboard → https://karandarjishack.github.io/stock-analysis/
+### 🔴 Live dashboard → https://karandarjishack.github.io/ai-trading-analysis/
 
 Inspired by the viral AI trading-desk reels: six specialized AI agents screen the market, debate every pick, and deliver a verdict — automatically, every 15 minutes during market hours.
 
@@ -112,4 +112,4 @@ stock-analysis/
 
 ---
 
-*Built for KD · Educational use only — not financial advice.*
+*Educational use only — not financial advice.*
