@@ -157,7 +157,7 @@ function card(p,i,animate){
       <div class="lvl"><div class="k" style="color:#22c55e">Target 1</div><div class="v" style="color:#22c55e">${money(lv.target_1,p.market)}</div></div>
       <div class="lvl"><div class="k" style="color:#22c55e">Target 2</div><div class="v" style="color:#22c55e">${money(lv.target_2,p.market)}</div></div>
     </div></span></div>`:''}
-    <div class="agent skep"><span class="tag">SKEPTIC</span><span class="body">⚠️ ${esc(d.skeptic||'')}</span></div>
+    <div class="agent skep"><span class="tag">SKEPTIC</span><span class="body">${esc(d.skeptic||'')}</span></div>
     <div class="agent chief"><span class="tag">CHIEF</span><span class="body"><span class="verdict v-${d.chief?.verdict||'WAIT'}">${d.chief?.verdict||'WAIT'}</span> <span style="color:#8b98ab">— ${esc(d.chief?.why||'')}</span></span></div>
   </div>`;
 }
@@ -177,7 +177,7 @@ function render(animate){
   const ub=document.getElementById('usBadge'), ib=document.getElementById('inBadge');
   ub.textContent='US: '+(ms.us_open?'OPEN':'CLOSED'); ub.className='badge '+(ms.us_open?'open':'closed');
   ib.textContent='India: '+(ms.india_open?'OPEN':'CLOSED'); ib.className='badge '+(ms.india_open?'open':'closed');
-  document.getElementById('disclaimer').textContent='⚠️ '+DATA.disclaimer+' Data refreshes automatically during market hours.';
+  document.getElementById('disclaimer').textContent=DATA.disclaimer+' Data refreshes automatically during market hours.';
   for(const mkt of ['US','IN']){
     const el=document.getElementById('panel-'+mkt);
     el.innerHTML=SECDEF.map(([key,title,sub])=>{
