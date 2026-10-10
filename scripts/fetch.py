@@ -71,6 +71,31 @@ def pct(a, b):
     return round((a - b) / b * 100, 2) if b else 0.0
 
 
+def bias_label(trend, chg_pct, sentiment=None):
+    """BULLISH/BEARISH/NEUTRAL from confluence of trend + momentum + headlines."""
+    votes, why = 0, []
+    if trend == "UPTREND":
+        votes += 1
+        why.append("uptrend")
+    elif trend == "DOWNTREND":
+        votes -= 1
+        why.append("downtrend")
+    if chg_pct >= 2:
+        votes += 1
+        why.append(f"up {chg_pct:+.1f}% today")
+    elif chg_pct <= -2:
+        votes -= 1
+        why.append(f"down {chg_pct:+.1f}% today")
+    if sentiment == "bullish":
+        votes += 1
+        why.append("bullish headlines")
+    elif sentiment == "bearish":
+        votes -= 1
+        why.append("bearish headlines")
+    label = "BULLISH" if votes >= 2 else "BEARISH" if votes <= -2 else "NEUTRAL"
+    return label, why
+
+
 # ---------------- US: Nasdaq API ----------------
 def nasdaq_history(symbol, tries=3):
     """Daily bars (oldest->newest) as (date, o, h, l, c, v) tuples."""
@@ -236,10 +261,12 @@ def analyze_bars(symbol, name, market, bars):
     trend = ("UPTREND" if price > sum(closes[-20:]) / 20 > sum(closes[-50:]) / 50
              else "DOWNTREND" if price < sum(closes[-20:]) / 20 < sum(closes[-50:]) / 50
              else "RANGE")
+    blab, bwhy = bias_label(trend, chg)
     return {
         "symbol": symbol, "name": name, "market": market,
         "price": round(price, 2), "chg_pct": chg,
         "vol_ratio": vol_ratio, "rsi_14": r, "trend": trend,
+        "bias": blab, "bias_why": ", ".join(bwhy) if bwhy else "mixed signals",
         "high_60d": round(hi60, 2), "low_60d": round(lo60, 2),
         "atr_14": a, "spark": [round(c, 2) for c in closes[-30:]],
     }
@@ -269,6 +296,7 @@ def desk_card(s, news_items):
     bull = sum(w in txt for w in BULL)
     bear = sum(w in txt for w in BEAR)
     label = "bullish" if bull > bear else "bearish" if bear > bull else "mixed"
+    blab, bwhy = bias_label(s["trend"], s["chg_pct"], label)
     a = s["atr_14"] or s["price"] * 0.02
     bull_play = s["chg_pct"] > 0
     entry = round(s["price"], 2)
@@ -280,6 +308,8 @@ def desk_card(s, news_items):
                                 or (not bull_play and s["rsi_14"] > 25)))
                else "WATCH" if s["vol_ratio"] >= 1.3 else "WAIT")
     return {
+        "bias": {"label": blab,
+                 "why": ", ".join(bwhy) if bwhy else "mixed signals"},
         "scout": (f"{s['chg_pct']:+.2f}% on {s['vol_ratio']}x relative volume, "
                   f"RSI {s['rsi_14']}, {s['trend']}."),
         "news": [{"title": t, "source": "Google News"} for t in news_items],
