@@ -205,9 +205,9 @@ def fetch_indices(prev):
             print(f"  index {label} failed ({e}); kept previous" if old
                   else f"  index {label} failed ({e}); no previous")
 
-    put("spx", "S&P 500", "US", idx_from_stooq, "%5Espx")
+    put("spx", "S&P 500", "US", idx_from_stooq, "^spx")
     put("ndx", "Nasdaq", "US", idx_from_nasdaq, "COMP")
-    put("dji", "Dow Jones", "US", idx_from_stooq, "%5Edji")
+    put("dji", "Dow Jones", "US", idx_from_stooq, "^dji")
     try:
         nse = idx_from_nse_csv()
         idx["nifty"] = {"name": "Nifty 50", "market": "IN", **nse["Nifty 50"]}
