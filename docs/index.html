@@ -124,6 +124,35 @@
   .bf.active { background:#1c2635; color:var(--txt); }
   .bf:active { transform:scale(.95); }
   #wlcount { font-size:12px; color:var(--dim); }
+  /* ---- Tech & Chip Predictions section ---- */
+  .techsec { border:1px solid var(--line); border-radius:8px; background:var(--panel);
+             margin:6px 0 26px; overflow:hidden; scroll-margin-top:96px; }
+  .techhead { width:100%; display:flex; justify-content:space-between; align-items:center; gap:10px;
+              background:transparent; border:none; color:var(--txt); padding:14px 16px; cursor:pointer;
+              font-family:inherit; text-align:left; transition:background .3s; }
+  .techhead:hover { background:#121924; }
+  .techhead:active { transform:scale(.998); }
+  .techhead .tt { font-size:12px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; }
+  .techhead .tc { font-size:12px; color:var(--dim); }
+  .techhead .tc b { color:var(--txt); }
+  .techhead .tchev { font-size:20px; color:var(--dim); transition:transform .35s cubic-bezier(0.32,0.72,0,1); flex:0 0 auto; }
+  .techhead.open .tchev { transform:rotate(45deg); }
+  .techbody { max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(0.32,0.72,0,1); }
+  .techbody.open { max-height:3200px; }
+  .techgroups { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; padding:2px 16px 16px; }
+  .techgroup h3 { font-size:11px; letter-spacing:1.5px; color:var(--dim); border-bottom:1px solid var(--line);
+                  padding-bottom:6px; margin-bottom:4px; }
+  .techgroup h3 .g{color:var(--green)} .techgroup h3 .r{color:var(--red)} .techgroup h3 .a{color:var(--amber)}
+  .trow { display:flex; flex-wrap:wrap; gap:4px 10px; align-items:baseline; padding:7px 0;
+          border-bottom:1px solid #1a2230; font-size:13px; }
+  .trow:last-child { border-bottom:none; }
+  .tsym b { font-size:13.5px; } .tname { color:var(--dim); font-size:12px; }
+  .tpx { font-weight:600; }
+  .tbias { font-size:10.5px; font-weight:700; letter-spacing:.5px; padding:2px 9px; border-radius:999px; }
+  .tbias.BULLISH { color:var(--green); background:rgba(34,197,94,.12); }
+  .tbias.BEARISH { color:var(--red); background:rgba(239,68,68,.12); }
+  .tbias.NEUTRAL { color:var(--dim); background:rgba(139,152,171,.12); }
+  .tnote { color:var(--dim); font-size:12px; flex-basis:100%; }
 </style>
 </head>
 <body>
@@ -214,6 +243,47 @@ function toggleCard(btn){
   const c=btn.closest('.card'), open=c.classList.toggle('open');
   btn.querySelector('span').textContent=open?'Hide details':'Details';
 }
+function toggleTech(mkt){
+  const sec=document.getElementById('sec-'+mkt+'-tech');
+  sec.querySelector('.techbody').classList.toggle('open');
+  sec.querySelector('.techhead').classList.toggle('open');
+}
+function jumpTech(){
+  const sec=document.getElementById('sec-'+CUR+'-tech');
+  sec.querySelector('.techbody').classList.add('open');
+  sec.querySelector('.techhead').classList.add('open');
+  sec.scrollIntoView({behavior:'smooth'});
+}
+function techRow(s,mkt){
+  const ch=s.chg_pct>=0;
+  return `<div class="trow"><span class="tsym"><b>${esc(s.symbol.replace('.NS',''))}</b> <span class="tname">${esc(s.name)}</span></span>
+    <span class="tpx">${money(s.price,mkt)}</span>
+    <span class="${ch?'up':'down'}" style="font-weight:600">${ch?'+':''}${s.chg_pct}%</span>
+    <span class="tbias ${s.bias}">${s.bias}</span>
+    <span class="tnote">${esc(s.note)}</span></div>`;
+}
+function techSection(mkt){
+  const t=(DATA.tech||{})[mkt];
+  if(!t) return '';
+  const grp=(key,title,cls,empty)=>{
+    const rows=t[key]||[];
+    return `<div class="techgroup"><h3>${title} <span class="${cls}">· ${rows.length}</span></h3>
+      ${rows.length?rows.map(s=>techRow(s,mkt)).join(''):`<div class="empty">${empty}</div>`}</div>`;
+  };
+  return `<div class="techsec" id="sec-${mkt}-tech">
+    <button class="techhead" onclick="toggleTech('${mkt}')">
+      <span class="tt">Tech &amp; Chip Predictions</span>
+      <span class="tc"><b>${t.buy.length}</b> buy · <b>${t.up.length}</b> up · <b>${t.down.length}</b> down · <b>${t.watch.length}</b> watch</span>
+      <span class="tchev">+</span>
+    </button>
+    <div class="techbody"><div class="techgroups">
+      ${grp('buy','BUY NOW','g','No high-conviction buys right now.')}
+      ${grp('up','GOING UP','g','No tech names trending up right now.')}
+      ${grp('down','GOING DOWN','r','No tech names trending down right now.')}
+      ${grp('watch','WATCH','a','Nothing on watch right now.')}
+    </div></div>
+  </div>`;
+}
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 let firstRender=true, WLQ='', WLB='';
@@ -228,10 +298,12 @@ function renderSummary(){
     const n=picks.filter(p=>p.sec===key).length;
     return `<a class="stat" href="#sec-${CUR}-${key}">${title.toLowerCase()} <b>${n}</b></a>`;
   }).join('');
+  const t=(DATA.tech||{})[CUR];
+  const techChip=t?`<a class="stat" href="javascript:void(0)" onclick="jumpTech()">Tech &amp; chip <b>${t.buy.length} buy</b></a>`:'';
   document.getElementById('summary').innerHTML=
     `<span class="stat"><b class="g">${setups}</b>&nbsp;setups</span>
      <span class="stat"><b class="g">${bull}</b>&nbsp;bullish</span>
-     <span class="stat"><b class="r">${bear}</b>&nbsp;bearish</span>${chips}`;
+     <span class="stat"><b class="r">${bear}</b>&nbsp;bearish</span>${techChip}${chips}`;
 }
 function renderWL(){
   if(!DATA) return;
@@ -270,7 +342,7 @@ function render(animate){
   document.getElementById('disclaimer').textContent=DATA.disclaimer+' Data refreshes automatically during market hours.';
   for(const mkt of ['US','IN']){
     const el=document.getElementById('panel-'+mkt);
-    el.innerHTML=SECDEF.map(([key,title,sub])=>{
+    el.innerHTML=techSection(mkt)+SECDEF.map(([key,title,sub])=>{
       const picks=DATA.screen[key].filter(p=>p.market===mkt);
       return `<h2 class="sec" id="sec-${mkt}-${key}">${title} <span style="color:#4a5568">· ${picks.length}</span></h2><div class="note">${sub}</div>
         ${picks.length?`<div class="cards">${picks.map((p,i)=>card(p,i,animate)).join('')}</div>`:'<div class="empty">Nothing on the tape right now.</div>'}`;
