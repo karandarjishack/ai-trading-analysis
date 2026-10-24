@@ -139,20 +139,25 @@
   .techhead.open .tchev { transform:rotate(45deg); }
   .techbody { max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(0.32,0.72,0,1); }
   .techbody.open { max-height:3200px; }
-  .techgroups { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; padding:2px 16px 16px; }
+  .techgroups { padding:2px 16px 16px; display:flex; flex-direction:column; gap:22px; }
   .techgroup h3 { font-size:11px; letter-spacing:1.5px; color:var(--dim); border-bottom:1px solid var(--line);
-                  padding-bottom:6px; margin-bottom:4px; }
+                  padding-bottom:6px; margin-bottom:2px; }
   .techgroup h3 .g{color:var(--green)} .techgroup h3 .r{color:var(--red)} .techgroup h3 .a{color:var(--amber)}
-  .trow { display:flex; flex-wrap:wrap; gap:4px 10px; align-items:baseline; padding:7px 0;
-          border-bottom:1px solid #1a2230; font-size:13px; }
-  .trow:last-child { border-bottom:none; }
-  .tsym b { font-size:13.5px; } .tname { color:var(--dim); font-size:12px; }
-  .tpx { font-weight:600; }
-  .tbias { font-size:10.5px; font-weight:700; letter-spacing:.5px; padding:2px 9px; border-radius:999px; }
+  .twrap { overflow-x:auto; }
+  .ttable { width:100%; border-collapse:collapse; font-size:13px; }
+  .ttable th { text-align:left; color:var(--dim); font-weight:600; font-size:10.5px; text-transform:uppercase;
+               letter-spacing:.8px; padding:7px 12px 7px 0; border-bottom:1px solid var(--line); white-space:nowrap; }
+  .ttable th.num, .ttable td.num { text-align:right; }
+  .ttable td { padding:8px 12px 8px 0; border-bottom:1px solid #1a2230; vertical-align:top; }
+  .ttable tr:last-child td { border-bottom:none; }
+  .ttable tbody tr { transition:background .25s; }
+  .ttable tbody tr:hover td { background:#141b28; }
+  .ttable .tname { color:var(--dim); font-size:11.5px; }
+  .ttable .tnote { color:var(--dim); font-size:12px; line-height:1.4; }
+  .tbias { font-size:10.5px; font-weight:700; letter-spacing:.5px; padding:2px 9px; border-radius:999px; white-space:nowrap; }
   .tbias.BULLISH { color:var(--green); background:rgba(34,197,94,.12); }
   .tbias.BEARISH { color:var(--red); background:rgba(239,68,68,.12); }
   .tbias.NEUTRAL { color:var(--dim); background:rgba(139,152,171,.12); }
-  .tnote { color:var(--dim); font-size:12px; flex-basis:100%; }
 </style>
 </head>
 <body>
@@ -256,11 +261,13 @@ function jumpTech(){
 }
 function techRow(s,mkt){
   const ch=s.chg_pct>=0;
-  return `<div class="trow"><span class="tsym"><b>${esc(s.symbol.replace('.NS',''))}</b> <span class="tname">${esc(s.name)}</span></span>
-    <span class="tpx">${money(s.price,mkt)}</span>
-    <span class="${ch?'up':'down'}" style="font-weight:600">${ch?'+':''}${s.chg_pct}%</span>
-    <span class="tbias ${s.bias}">${s.bias}</span>
-    <span class="tnote">${esc(s.note)}</span></div>`;
+  return `<tr><td><b>${esc(s.symbol.replace('.NS',''))}</b><br><span class="tname">${esc(s.name)}</span></td>
+    <td class="num" style="font-weight:600">${money(s.price,mkt)}</td>
+    <td class="num ${ch?'up':'down'}" style="font-weight:600">${ch?'+':''}${s.chg_pct}%</td>
+    <td class="num">${s.vol_ratio}x</td>
+    <td class="num">${s.rsi_14}</td>
+    <td><span class="tbias ${s.bias}">${s.bias}</span></td>
+    <td class="tnote">${esc(s.note)}</td></tr>`;
 }
 function techSection(mkt){
   const t=(DATA.tech||{})[mkt];
@@ -268,7 +275,7 @@ function techSection(mkt){
   const grp=(key,title,cls,empty)=>{
     const rows=t[key]||[];
     return `<div class="techgroup"><h3>${title} <span class="${cls}">· ${rows.length}</span></h3>
-      ${rows.length?rows.map(s=>techRow(s,mkt)).join(''):`<div class="empty">${empty}</div>`}</div>`;
+      ${rows.length?`<div class="twrap"><table class="ttable"><thead><tr><th>Symbol</th><th class="num">Price</th><th class="num">Chg</th><th class="num">Vol</th><th class="num">RSI</th><th>Bias</th><th>Signal</th></tr></thead><tbody>${rows.map(s=>techRow(s,mkt)).join('')}</tbody></table></div>`:`<div class="empty">${empty}</div>`}</div>`;
   };
   return `<div class="techsec" id="sec-${mkt}-tech">
     <button class="techhead" onclick="toggleTech('${mkt}')">
