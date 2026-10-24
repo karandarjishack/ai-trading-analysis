@@ -374,9 +374,10 @@ def build_tech(ok):
         down = sorted([s for s in tsyms if s["bias"] == "BEARISH"],
                       key=lambda s: s["chg_pct"])
         buy = [s for s in up if s["trend"] == "UPTREND" and 30 <= s["rsi_14"] <= 72]
-        watch = [s for s in tsyms if s["bias"] == "NEUTRAL"
-                 and (s["chg_pct"] >= 1 or s["vol_ratio"] >= 1.5
-                      or s["price"] >= s["high_60d"] * 0.98)]
+        watch = sorted([s for s in tsyms if s["bias"] == "NEUTRAL"
+                        and (s["chg_pct"] >= 1 or s["vol_ratio"] >= 1.5
+                             or s["price"] >= s["high_60d"] * 0.98)],
+                       key=lambda s: s["chg_pct"], reverse=True)
 
         def row(s, group):
             return {"symbol": s["symbol"], "name": s["name"],
