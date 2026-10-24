@@ -325,6 +325,73 @@ def desk_card(s, news_items):
     }
 
 
+# ---------------- Tech & Chip predictions (rule-based, no news) ----------------
+TECH_US = ["NVDA", "AVGO", "AMD", "INTC", "QCOM", "MU", "AMAT", "LRCX", "KLAC",
+           "TXN", "ADI", "MRVL", "ON", "MPWR", "MSFT", "AAPL", "GOOGL", "META",
+           "AMZN", "CRM", "ORCL", "ADBE", "NOW", "SNPS", "CDNS", "PLTR", "CSCO",
+           "IBM", "ACN", "HPQ", "HPE", "DELL", "FTNT", "PANW", "CRWD", "APH", "GLW",
+           "TER", "KEYS", "JBL", "FLEX", "TEL", "ANET", "MSI", "AKAM", "GEN",
+           "SMCI", "APP"]
+TECH_IN = ["TCS", "INFY", "HCLTECH", "WIPRO", "TECHM", "MPHASIS", "COFORGE",
+           "PERSISTENT", "OFSS", "TATAELXSI", "KPITTECH", "CYIENT", "DIXON",
+           "KAYNES", "CGPOWER", "AMBER", "SYRMA", "TATATECH", "INTELLECT", "NETWEB"]
+
+
+def tech_note(group, s):
+    """One-line rule-based read from trend + momentum + RSI + levels."""
+    chg, rsi, trend = s["chg_pct"], s["rsi_14"], s["trend"]
+    if group == "buy":
+        if rsi >= 65:
+            return "Uptrend + momentum aligned — strong, but hot; prefer dips"
+        return "Uptrend + momentum aligned — strength favors upside"
+    if group == "up":
+        if chg >= 5:
+            return "Sharp move on volume — momentum strong"
+        if trend == "UPTREND":
+            return "Uptrend intact — follow-through likely"
+        return "Bouncing — trend not yet confirmed"
+    if group == "down":
+        if chg <= -5:
+            return "Sharp selloff — selling pressure heavy"
+        if trend == "DOWNTREND":
+            return "Downtrend intact — avoid fresh longs"
+        return "Weak day — trend mixed"
+    if s["price"] >= s["high_60d"] * 0.98:
+        return "Sitting near 60-day high — breakout watch"
+    if s["vol_ratio"] >= 1.5:
+        return "Unusual volume — something brewing"
+    return "Flat but firm — on watch"
+
+
+def build_tech(ok):
+    """Per-market Tech & Chip groups: buy / going up / going down / watch."""
+    tech = {}
+    for mkt, tlist in (("US", TECH_US), ("IN", TECH_IN)):
+        tsyms = [s for s in ok if s["market"] == mkt
+                 and s["symbol"].replace(".NS", "") in tlist]
+        up = sorted([s for s in tsyms if s["bias"] == "BULLISH"],
+                    key=lambda s: s["chg_pct"], reverse=True)
+        down = sorted([s for s in tsyms if s["bias"] == "BEARISH"],
+                      key=lambda s: s["chg_pct"])
+        buy = [s for s in up if s["trend"] == "UPTREND" and 30 <= s["rsi_14"] <= 72]
+        watch = [s for s in tsyms if s["bias"] == "NEUTRAL"
+                 and (s["chg_pct"] >= 1 or s["vol_ratio"] >= 1.5
+                      or s["price"] >= s["high_60d"] * 0.98)]
+
+        def row(s, group):
+            return {"symbol": s["symbol"], "name": s["name"],
+                    "price": s["price"], "chg_pct": s["chg_pct"],
+                    "vol_ratio": s["vol_ratio"], "rsi_14": s["rsi_14"],
+                    "trend": s["trend"], "bias": s["bias"],
+                    "note": tech_note(group, s)}
+
+        tech[mkt] = {"buy": [row(s, "buy") for s in buy],
+                     "up": [row(s, "up") for s in up],
+                     "down": [row(s, "down") for s in down],
+                     "watch": [row(s, "watch") for s in watch]}
+    return tech
+
+
 def market_status(now):
     h = now.hour + now.minute / 60
     us_open = now.weekday() < 5 and 13.5 <= h < 20      # 9:30-16:00 ET
@@ -417,6 +484,7 @@ def main():
                 "trend": s["trend"], "desk": d}
 
     now = datetime.now(timezone.utc)
+    tech = build_tech(ok)
     payload = {
         "generated_at_utc": now.strftime("%Y-%m-%d %H:%M UTC"),
         "market_status": market_status(now),
@@ -428,6 +496,7 @@ def main():
             "breakouts": [pick(s) for s in breakouts],
             "weak": [pick(s) for s in weak],
         },
+        "tech": tech,
         "disclaimer": ("Educational screener only — not financial advice. "
                        "Free market data can be delayed ~15 min."),
     }
@@ -436,7 +505,12 @@ def main():
     print(f"wrote docs/data/market.json: {len(ok)} symbols, "
           f"{len(most_bought)} bought, {len(most_sold)} sold, "
           f"{len(breakouts)} breakouts, {len(weak)} weak, {len(desk)} desk cards, "
-          f"{len(payload['indices'])} indices, total {time.time()-t0:.0f}s")
+          f"{len(payload['indices'])} indices, "
+          f"tech US {len(tech['US']['buy'])} buy/{len(tech['US']['up'])} up/"
+          f"{len(tech['US']['down'])} down/{len(tech['US']['watch'])} watch, "
+          f"tech IN {len(tech['IN']['buy'])} buy/{len(tech['IN']['up'])} up/"
+          f"{len(tech['IN']['down'])} down/{len(tech['IN']['watch'])} watch, "
+          f"total {time.time()-t0:.0f}s")
 
 
 if __name__ == "__main__":
